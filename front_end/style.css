@@ -1,0 +1,146 @@
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #e3f2fd, #fff3e0);
+  color: #333;
+}
+
+
+header {
+  background-color: #00695c;
+  color: white;
+  padding: 20px;
+  font-size: 1.6em;
+  text-align: center;
+  font-weight: bold;
+}
+
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+}
+
+.form-container {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 450px;
+}
+
+h2 {
+  text-align: center;
+  color: #00796b;
+  margin-bottom: 20px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #00796b;
+  color: white;
+  font-size: 1em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #004d40;
+}
+
+.feed-link {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #00695c;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.feed-link:hover {
+  color: #00332c;
+}
+.feed-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.post-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.post-content {
+  padding: 15px;
+}
+
+.timestamp {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 10px;
+}
+
+.back-btn {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.back-btn a {
+  color: #00796b;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.back-btn a:hover {
+  text-decoration: underline;
+}
+
+.map-container {
+  margin-top: 30px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 300px;
+  border: none;
+  border-radius: 12px;
+}
