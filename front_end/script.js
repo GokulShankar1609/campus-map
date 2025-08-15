@@ -6,7 +6,7 @@ document.getElementById("postForm").addEventListener("submit", async function (e
   const location = document.getElementById("location").value.trim();
 
   try {
-    const response = await fetch("http://localhost:3000/api/posts", {
+    const response = await fetch("https://campus-map.onrender.com/api/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ imageUrl, description, location })
