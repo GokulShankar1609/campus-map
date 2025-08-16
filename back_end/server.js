@@ -21,7 +21,9 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // ✅ Serve uploaded images
+
+// ✅ Serve uploaded images + fallback image
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ MongoDB setup
 const uri = process.env.MONGO_URI;

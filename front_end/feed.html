@@ -168,9 +168,9 @@ async function loadPosts() {
 
       postDiv.innerHTML = `
         ${imageSrc ? `
-          <img src="${imageSrc}"
-               onclick="openModal('${imageSrc}')"
-               onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found';" />
+         <img src="${imageSrc}"
+           onclick="openModal('${imageSrc}')"
+          onerror="this.onerror=null; this.src='https://campus-map-6cuk.onrender.com/uploads/no-image.png';"
         ` : `
           <div style="height:200px;background:#eee;display:flex;align-items:center;justify-content:center;">
             <span style="color:#777;">📷 No image provided</span>
