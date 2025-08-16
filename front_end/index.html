@@ -6,6 +6,10 @@
   <title>SeekNKeep Login</title>
   <link rel="stylesheet" href="style.css" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,7 +17,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     .login-container {
@@ -33,15 +38,15 @@
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       color: #00796b;
-      font-size: 1.6em;
+      font-size: 1.8em;
     }
 
     input {
       width: 100%;
       padding: 12px;
-      margin: 10px 0;
+      margin: 12px 0;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
@@ -64,6 +69,7 @@
       font-weight: bold;
       cursor: pointer;
       transition: background-color 0.3s;
+      margin-top: 10px;
     }
 
     button:hover {
@@ -71,7 +77,7 @@
     }
 
     .footer {
-      margin-top: 15px;
+      margin-top: 20px;
       font-size: 14px;
       color: #888;
     }
@@ -79,6 +85,14 @@
     @media (max-width: 480px) {
       .login-container {
         padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+
+      input, button {
+        font-size: 15px;
       }
     }
   </style>
@@ -101,7 +115,6 @@
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
-      // Simple local auth simulation (replace with real validation later)
       if (username === 'SeekNKeep' && password === '1234') {
         alert('✅ Logged in successfully!');
         window.location.href = 'post.html';
