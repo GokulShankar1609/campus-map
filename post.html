@@ -59,6 +59,12 @@
       text-decoration: none;
       font-weight: bold;
     }
+    #preview {
+      margin-top: 12px;
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
@@ -70,8 +76,8 @@
     <div class="form-container">
       <h2>Report Your Lost Item</h2>
       <form id="postForm" enctype="multipart/form-data">
-
-        <input type="file" id="photoFile" accept="image/*" required />
+        <input type="file" id="photo" name="photo" accept="image/*" required />
+        <img id="preview" src="" alt="Image Preview" style="display:none;" />
         <textarea id="description" placeholder="Describe your missing item..." rows="3" required></textarea>
         <input type="text" id="location" placeholder="Last seen location (e.g., Room 12, Library)" required />
         <button type="submit">📤 Report Missing</button>
@@ -90,34 +96,6 @@
     </div>
   </main>
 
-  <script>
-    document.getElementById("postForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const photoFile = document.getElementById("photoFile").files[0];
-      const description = document.getElementById("description").value.trim();
-      const location = document.getElementById("location").value.trim();
-
-      const formData = new FormData();
-      formData.append("description", description);
-      formData.append("location", location);
-      formData.append("photo", photoFile); // Must match 'upload.single("photo")'
-
-      try {
-        const res = await fetch("http://localhost:3000/api/posts", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!res.ok) throw new Error("Upload failed");
-
-        alert("✅ Your missing item has been reported!");
-        window.location.href = "feed.html";
-      } catch (err) {
-        console.error(err);
-        alert("❌ Failed to report item.");
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -7,15 +7,24 @@ const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 3000; // ✅ Works on both local & cloud
+const port = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// ✅ CORS Configuration
+const allowedOrigins = [
+  "https://campus-map-front-end.onrender.com", // your frontend render
+  "http://localhost:3000" // local testing
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve image files
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded images
 
-// MongoDB
-const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017";
+// ✅ MongoDB setup
+const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 let collection;
 
@@ -31,7 +40,7 @@ async function connectToDB() {
 }
 connectToDB();
 
-// Multer setup
+// ✅ Multer setup for image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = path.join(__dirname, "uploads");
@@ -43,9 +52,17 @@ const storage = multer.diskStorage({
     cb(null, unique);
   }
 });
-const upload = multer({ storage });
 
-// POST route
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (allowed.includes(file.mimetype)) cb(null, true);
+    else cb(new Error("Only image files allowed"));
+  }
+});
+
+// ✅ POST route to upload a missing item
 app.post("/api/posts", upload.single("photo"), async (req, res) => {
   try {
     const { description, location } = req.body;
@@ -53,8 +70,11 @@ app.post("/api/posts", upload.single("photo"), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, error: "Image missing" });
     }
+    if (!description || !location) {
+      return res.status(400).json({ success: false, error: "Missing fields" });
+    }
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = `https://campus-map-backend.onrender.com/uploads/${req.file.filename}`;
     const post = {
       description,
       location,
@@ -64,7 +84,7 @@ app.post("/api/posts", upload.single("photo"), async (req, res) => {
 
     const result = await collection.insertOne(post);
     console.log("✅ Post saved:", result.insertedId);
-    res.status(201).json({ success: true, insertedId: result.insertedId });
+    res.status(201).json({ success: true, insertedId: result.insertedId, imageUrl });
 
   } catch (err) {
     console.error("❌ Server error:", err.message);
@@ -72,14 +92,37 @@ app.post("/api/posts", upload.single("photo"), async (req, res) => {
   }
 });
 
-// GET route
+// ✅ GET route to fetch all posts
 app.get("/api/posts", async (req, res) => {
   try {
+    if (!collection) {
+      return res.status(500).json({ success: false, error: "DB not connected" });
+    }
     const posts = await collection.find().sort({ createdAt: -1 }).toArray();
     res.json(posts);
   } catch (err) {
+    console.error("❌ Fetch error:", err.message);
     res.status(500).json({ success: false, error: "Fetching posts failed" });
   }
+});
+
+// ✅ Alias for feed
+app.get("/api/feed", async (req, res) => {
+  try {
+    if (!collection) {
+      return res.status(500).json({ success: false, error: "DB not connected" });
+    }
+    const posts = await collection.find().sort({ createdAt: -1 }).toArray();
+    res.json(posts);
+  } catch (err) {
+    console.error("❌ Feed fetch error:", err.message);
+    res.status(500).json({ success: false, error: "Fetching feed failed" });
+  }
+});
+
+// ✅ Health check
+app.get("/", (req, res) => {
+  res.send("✅ CampusMap backend is running.");
 });
 
 app.listen(port, () => {

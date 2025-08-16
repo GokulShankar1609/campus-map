@@ -7,7 +7,7 @@ const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT; // ✅ No fallback for Render
 
 // ✅ CORS Configuration
 const allowedOrigins = [
@@ -23,16 +23,18 @@ app.use(cors({
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded images
 
-// MongoDB setup
-const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017";
+// ✅ MongoDB setup
+const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 let collection;
+let dbReady = false;
 
 async function connectToDB() {
   try {
     await client.connect();
     const db = client.db("campusmapdb");
     collection = db.collection("posts");
+    dbReady = true;
     console.log("✅ MongoDB connected.");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
@@ -40,7 +42,15 @@ async function connectToDB() {
 }
 connectToDB();
 
-// Multer setup for image uploads
+// ✅ Block requests until DB is ready
+app.use((req, res, next) => {
+  if (!dbReady) {
+    return res.status(503).json({ success: false, error: "Database not ready" });
+  }
+  next();
+});
+
+// ✅ Multer setup for image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = path.join(__dirname, "uploads");
@@ -65,6 +75,7 @@ const upload = multer({
 // ✅ POST route to upload a missing item
 app.post("/api/posts", upload.single("photo"), async (req, res) => {
   try {
+    const sanitize = (str) => str.trim();
     const { description, location } = req.body;
 
     if (!req.file) {
@@ -76,14 +87,18 @@ app.post("/api/posts", upload.single("photo"), async (req, res) => {
 
     const imageUrl = `https://campus-map-backend.onrender.com/uploads/${req.file.filename}`;
     const post = {
-      description,
-      location,
+      description: sanitize(description),
+      location: sanitize(location),
       imageUrl,
       createdAt: new Date(),
     };
 
     const result = await collection.insertOne(post);
     console.log("✅ Post saved:", result.insertedId);
+    console.log("📸 Uploaded file:", req.file.filename);
+    console.log("📝 Description:", description);
+    console.log("📍 Location:", location);
+
     res.status(201).json({ success: true, insertedId: result.insertedId, imageUrl });
 
   } catch (err) {
@@ -92,12 +107,9 @@ app.post("/api/posts", upload.single("photo"), async (req, res) => {
   }
 });
 
-// ✅ GET route to fetch all posts (original)
+// ✅ GET route to fetch all posts
 app.get("/api/posts", async (req, res) => {
   try {
-    if (!collection) {
-      return res.status(500).json({ success: false, error: "DB not connected" });
-    }
     const posts = await collection.find().sort({ createdAt: -1 }).toArray();
     res.json(posts);
   } catch (err) {
@@ -106,12 +118,9 @@ app.get("/api/posts", async (req, res) => {
   }
 });
 
-// ✅ NEW: GET route for /api/feed (alias)
+// ✅ Alias for feed
 app.get("/api/feed", async (req, res) => {
   try {
-    if (!collection) {
-      return res.status(500).json({ success: false, error: "DB not connected" });
-    }
     const posts = await collection.find().sort({ createdAt: -1 }).toArray();
     res.json(posts);
   } catch (err) {
@@ -120,9 +129,17 @@ app.get("/api/feed", async (req, res) => {
   }
 });
 
-// Health check route
+// ✅ Health check
 app.get("/", (req, res) => {
-  res.send("✅ SeekNKeep backend is running.");
+  res.send("✅ CampusMap backend is running.");
+});
+
+// ✅ Global error handler for Multer
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError || err.message.includes("Only image files allowed")) {
+    return res.status(400).json({ success: false, error: err.message });
+  }
+  next(err);
 });
 
 app.listen(port, () => {

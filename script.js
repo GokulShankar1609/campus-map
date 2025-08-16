@@ -1,26 +1,70 @@
-document.getElementById("postForm").addEventListener("submit", async function (e) {
+const form = document.getElementById("postForm");
+const photoInput = document.getElementById("photo");
+const preview = document.getElementById("preview");
+
+const API_BASE = "https://campus-map-6cuk.onrender.com"; // ✅ Match your live backend
+
+// ✅ Show image preview before upload
+photoInput.addEventListener("change", () => {
+  const file = photoInput.files[0];
+  if (file) {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
+  }
+});
+
+// ✅ Handle form submission
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const imageUrl = document.getElementById("photo").value.trim();
   const description = document.getElementById("description").value.trim();
   const location = document.getElementById("location").value.trim();
+  const file = photoInput.files[0];
+
+  if (!file) {
+    alert("Please select a photo.");
+    return;
+  }
+
+  if (!description || !location) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("photo", file); // keep `photo` for multer
+  formData.append("description", description);
+  formData.append("location", location);
+
+  const button = form.querySelector("button");
+  button.disabled = true;
+  button.textContent = "⏳ Submitting...";
 
   try {
-    const response = await fetch("http://localhost:3000/api/posts", {
+    const response = await fetch(`${API_BASE}/api/posts`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageUrl, description, location })
+      body: formData,
     });
 
-    if (response.ok) {
-      alert("✅ Post added successfully!");
-      document.getElementById("postForm").reset();
-      window.location.href = "feed.html"; // Redirect after success
+    const result = await response.json();
+
+    button.disabled = false;
+    button.textContent = "📤 Report Missing";
+
+    if (result.success) {
+      alert("✅ Post submitted successfully!");
+      form.reset();
+      preview.style.display = "none";
+      // window.location.href = "feed.html"; // optional redirect
     } else {
-      alert("⚠️ Failed to add post. Try again.");
+      alert("❌ Failed to submit: " + (result.error || "Unknown error"));
     }
-  } catch (error) {
-    console.error("Error posting item:", error);
-    alert("🚫 Server error. Please check connection.");
+  } catch (err) {
+    console.error("❌ Error submitting post:", err);
+    alert("Server error: Could not upload post.");
+    button.disabled = false;
+    button.textContent = "📤 Report Missing";
   }
 });

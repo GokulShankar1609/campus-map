@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -14,18 +15,29 @@
       align-items: center;
       height: 100vh;
     }
+
     .login-container {
       background: white;
-      padding: 40px;
+      padding: 40px 30px;
       border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 350px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 360px;
       text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     h1 {
       margin-bottom: 20px;
       color: #00796b;
+      font-size: 1.6em;
     }
+
     input {
       width: 100%;
       padding: 12px;
@@ -33,7 +45,14 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
+      transition: border-color 0.3s;
     }
+
+    input:focus {
+      border-color: #00796b;
+      outline: none;
+    }
+
     button {
       width: 100%;
       padding: 12px;
@@ -42,15 +61,25 @@
       border: none;
       border-radius: 8px;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
+
     button:hover {
       background-color: #004d40;
     }
+
     .footer {
       margin-top: 15px;
       font-size: 14px;
       color: #888;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
     }
   </style>
 </head>
@@ -66,21 +95,20 @@
   </div>
 
   <script>
-  document.getElementById('loginForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
 
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
 
-    // Simple local auth simulation (replace with real validation later)
-    if (username === 'SeekNKeep' && password === '1234') {
-      alert('✅ Logged in successfully!');
-      window.location.href = 'post.html';
-    } else {
-      alert('❌ Invalid credentials. Access allowed only to campus members.');
-    }
-  });
-</script>
-
+      // Simple local auth simulation (replace with real validation later)
+      if (username === 'SeekNKeep' && password === '1234') {
+        alert('✅ Logged in successfully!');
+        window.location.href = 'post.html';
+      } else {
+        alert('❌ Invalid credentials. Access allowed only to campus members.');
+      }
+    });
+  </script>
 </body>
 </html>
