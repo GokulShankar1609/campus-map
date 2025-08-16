@@ -7,7 +7,7 @@ const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT; // ✅ No fallback for Render
+const port = process.env.PORT; // ✅ Required for Render
 
 // ✅ CORS Configuration
 const allowedOrigins = [
@@ -21,7 +21,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded images
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // ✅ Serve uploaded images
 
 // ✅ MongoDB setup
 const uri = process.env.MONGO_URI;
@@ -85,7 +85,7 @@ app.post("/api/posts", upload.single("photo"), async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing fields" });
     }
 
-    const imageUrl = `https://campus-map-backend.onrender.com/uploads/${req.file.filename}`;
+    const imageUrl = `https://campus-map-6cuk.onrender.com/uploads/${req.file.filename}`; // ✅ Match frontend base
     const post = {
       description: sanitize(description),
       location: sanitize(location),

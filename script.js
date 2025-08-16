@@ -2,9 +2,9 @@ const form = document.getElementById("postForm");
 const photoInput = document.getElementById("photo");
 const preview = document.getElementById("preview");
 
-const API_BASE = "https://campus-map-6cuk.onrender.com"; // ✅ Match your live backend
+const API_BASE = "https://campus-map-6cuk.onrender.com"; // ✅ Your backend
 
-// ✅ Show image preview before upload
+// ✅ Show image preview
 photoInput.addEventListener("change", () => {
   const file = photoInput.files[0];
   if (file) {
@@ -24,17 +24,17 @@ form.addEventListener("submit", async (e) => {
   const file = photoInput.files[0];
 
   if (!file) {
-    alert("Please select a photo.");
+    alert("📸 Please select a photo.");
     return;
   }
 
   if (!description || !location) {
-    alert("Please fill in all fields.");
+    alert("📝 Please fill in all fields.");
     return;
   }
 
   const formData = new FormData();
-  formData.append("photo", file); // keep `photo` for multer
+  formData.append("photo", file); // ✅ Matches backend
   formData.append("description", description);
   formData.append("location", location);
 
@@ -53,11 +53,11 @@ form.addEventListener("submit", async (e) => {
     button.disabled = false;
     button.textContent = "📤 Report Missing";
 
-    if (result.success) {
+    if (response.ok && result.success) {
       alert("✅ Post submitted successfully!");
       form.reset();
       preview.style.display = "none";
-      // window.location.href = "feed.html"; // optional redirect
+      window.location.href = "feed.html"; // ✅ Redirect works now
     } else {
       alert("❌ Failed to submit: " + (result.error || "Unknown error"));
     }

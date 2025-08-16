@@ -144,24 +144,34 @@
         feedContainer.innerHTML = "";
 
         posts.forEach(post => {
-          const imageSrc = post.imageUrl || "https://via.placeholder.com/300x200?text=No+Image";
+  const imageSrc = post.imageUrl?.startsWith("http")
+    ? post.imageUrl
+    : post.imageUrl
+      ? `${BASE_URL}${post.imageUrl}`
+      : null;
 
-          const postDiv = document.createElement("div");
-          postDiv.className = "post";
+  const postDiv = document.createElement("div");
+  postDiv.className = "post";
 
-          postDiv.innerHTML = `
-            <img src="${imageSrc}" alt="Uploaded image of ${escapeHTML(post.location || 'Unknown')}"
-                 onclick="openModal('${imageSrc}')"
-                 onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found';" />
-            <div class="post-content">
-              <p><strong>Description:</strong> ${escapeHTML(post.description || "No description")}</p>
-              <p><strong>Location:</strong> ${escapeHTML(post.location || "Not specified")}</p>
-              <p class="timestamp">📅 ${post.createdAt ? new Date(post.createdAt).toLocaleString() : "Unknown"}</p>
-            </div>
-          `;
+  postDiv.innerHTML = `
+    ${imageSrc ? `
+      <img src="${imageSrc}"
+           onclick="openModal('${imageSrc}')"
+           onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found';" />
+    ` : `
+      <div style="height:200px;background:#eee;display:flex;align-items:center;justify-content:center;">
+        <span style="color:#777;">📷 No image provided</span>
+      </div>
+    `}
+    <div class="post-content">
+      <p><strong>Description:</strong> ${escapeHTML(post.description || "No description")}</p>
+      <p><strong>Location:</strong> ${escapeHTML(post.location || "Not specified")}</p>
+      <p class="timestamp">📅 ${post.createdAt ? new Date(post.createdAt).toLocaleString() : "Unknown"}</p>
+    </div>
+  `;
 
-          feedContainer.appendChild(postDiv);
-        });
+  feedContainer.appendChild(postDiv);
+});
 
       } catch (error) {
         console.error("Fetch error:", error);
